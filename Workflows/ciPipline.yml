@@ -1,0 +1,29 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      -main
+
+jobs:
+  builds:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run lint
+        run: yarn install
+        continue-on-error: false
+
+      - name: Run Tests
+        run: yarn test
+        continue-on-error: false
+
+      - name: Build Project
+        run: yarn build
+        contnue-on-error: false      
