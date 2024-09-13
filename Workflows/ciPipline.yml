@@ -18,12 +18,21 @@ jobs:
 
       - name: Run lint
         run: yarn install
-        continue-on-error: false
 
       - name: Run Tests
         run: yarn test
-        continue-on-error: false
 
       - name: Build Project
         run: yarn build
-        contnue-on-error: false      
+
+      - name: Build Docker image
+        run: docker build -t my-app-image .   
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Tag Docker image
+        run: docker tag m324-simple-typescript ${{ secrets.DOCKER_USERNAME }}/m324-simple-typescript:latest
+
+        - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/m324-simple-typescript:latest

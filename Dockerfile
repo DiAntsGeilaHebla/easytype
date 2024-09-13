@@ -1,29 +1,29 @@
-# Step 1: Use an official Node.js image as the base image
-FROM node:18
+# 1. Basis-Image verwenden (Node.js 18)
+FROM node:18-alpine
 
-# Step 2: Set the working directory inside the container
+# 2. Arbeitsverzeichnis erstellen und festlegen
 WORKDIR /app
 
-# Step 3: Copy package.json and yarn.lock to the working directory
-COPY package.json yarn.lock ./
+# 3. Kopiere die package.json und package-lock.json in das Arbeitsverzeichnis
+COPY package*.json ./
 
-# Step 4: Install dependencies
-RUN yarn install
+# 4. Installiere die Abhängigkeiten
+RUN npm install
 
-# Step 5: Copy the rest of the application code to the working directory
+# 5. Kopiere den gesamten Applikationscode in das Image
 COPY . .
 
-# Step 6: Lint the code
-RUN yarn lint
+# 6. Führe Linting mit automatischer Korrektur aus
+RUN npm run lint -- --fix
 
-# Step 7: Test the code
-RUN yarn test
+# 7. Teste den Code
+RUN npm run test
 
-# Step 8: Build the application
-RUN yarn build
+# 8. Baue die Applikation (falls notwendig)
+RUN npm run build
 
-# Step 9: Expose the application on port 3000 (if applicable)
+# 9. Port freigeben (Standard für Webanwendungen, z. B. 3000)
 EXPOSE 3000
 
-# Step 10: Define the command to start the app
-CMD ["yarn", "start"]
+# 10. Startbefehl definieren
+CMD ["npm", "start"]
