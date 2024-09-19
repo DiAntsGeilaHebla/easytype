@@ -1,0 +1,46 @@
+name: CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  APP_NAME: m324-simple-typescript
+  KUBERNETES_NAMESPACE: m324-csbe2
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build -t m324-simple-typescript .
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/m324-simple-typescript:latest
+
+      - name: Check and Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+        id: install
+
+      - name: Set up kubectl
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Replace and Apply Kubernetes Manifests
+        uses: swdotcom/update-and-apply-kubernetes-configs@v1
+        with:
+          k8-config-file-paths: |
+            .k8s/01_deployment.yml
+            .k8s/02_service.yml
+            .k8s/03_ingress.yml
+          replacement-method: defined
