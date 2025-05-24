@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ] # passe ggf. an deinen Branch an
+    branches: [ master ]
 
 jobs:
   build-check:
